@@ -1,17 +1,14 @@
-# Secrets & local artifacts — do not commit
-.env
-.venv/
-__pycache__/
-*.pyc
-.pytest_cache/
-data/uploads/*
-data/parsed/*
-data/chunks/*
-data/vectors/*
-data/images/*
-data/qdrant/
-!data/uploads/.gitkeep
-!data/parsed/.gitkeep
-!data/chunks/.gitkeep
-!data/vectors/.gitkeep
-!data/images/.gitkeep
+# Root ignores for the whole monorepo
+.DS_Store
+Thumbs.db
+*.log
+
+# Never commit secrets from any project
+**/.env
+!**/.env.example
+
+# Python junk anywhere
+**/__pycache__/
+**/*.pyc
+**/.venv/
+**/.pytest_cache/
