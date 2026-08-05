@@ -1,0 +1,39 @@
+# ============================================================
+# STEP 1 — Core dependencies for layout-aware PDF parsing
+# Python 3.14+ friendly (use recent wheels; avoid ancient pins)
+# Later steps will add: OCR, embeddings, vector DB, LLM clients
+# ============================================================
+
+# FastAPI — production API framework (async, OpenAPI docs at /docs)
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+python-multipart>=0.0.20   # required for file upload endpoints
+
+# Layout-aware PDF parsing
+# PyMuPDF (import name: fitz) — retains blocks, positions, fonts, page structure
+# Why NOT PyPDF2 alone? It is text-first and loses layout/table geometry.
+pymupdf>=1.25.0
+
+# pdfplumber — optional alternative for tables (may fail on locked-down Windows
+# if cryptography/cffi DLLs are blocked by Application Control).
+# Our Step 2 default uses PyMuPDF find_tables() instead — same idea.
+pdfplumber>=0.11.5
+
+# Pydantic — typed request/response models (already used by FastAPI)
+pydantic>=2.10.0
+pydantic-settings>=2.7.0
+
+# STEP 3 — OCR (text inside images). RapidOCR needs no system Tesseract install.
+rapidocr-onnxruntime>=1.2.3
+onnxruntime>=1.16.0
+numpy>=1.26.0
+# Pillow already pulled in by pdfplumber / rapidocr
+
+# STEP 6 — local semantic embeddings (no API key required)
+fastembed>=0.5.0
+
+# Vector DB — Qdrant (local embedded mode or server URL)
+qdrant-client>=1.12.0
+
+# STEP 8 — optional real LLM (OpenAI-compatible). Works without key via fallback.
+openai>=1.60.0
