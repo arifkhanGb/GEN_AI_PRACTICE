@@ -1,5 +1,6 @@
 import re
 from pathlib import Path
+import tiktoken
 
 
 # =========================================================
@@ -17,13 +18,17 @@ MAX_SEGMENT_DURATION = 30
 MAX_GAP = 2
 
 
+# =========================================================
+# TOKEN CHUNKING CONFIGURATION
+# =========================================================
+
 # Maximum characters allowed in one RAG chunk.
 #
 # IMPORTANT:
 # This is temporary.
 # Later we will replace character-based chunking with
 # token-based chunking.
-MAX_CHARS = 200
+MAX_CHARS = 100
 
 
 # Number of subtitles to carry from the previous chunk.
@@ -35,6 +40,33 @@ MAX_CHARS = 200
 #
 # Subtitle 3 is the overlap.
 OVERLAP_SUBTITLES = 1
+
+MAX_TOKENS = 100
+
+# =========================================================
+# TOKENIZER
+# =========================================================
+
+# Load a tokenizer.
+#
+# cl100k_base is commonly used with OpenAI-style models.
+# The exact tokenizer should eventually match the model
+# used in your production embedding pipeline.
+TOKENIZER = tiktoken.get_encoding(
+    "cl100k_base"
+)
+
+
+def count_tokens(text):
+    """
+    Return the number of tokens in the supplied text.
+    """
+
+    tokens = TOKENIZER.encode(
+        text
+    )
+
+    return len(tokens)
 
 
 # =========================================================
@@ -441,6 +473,14 @@ def create_chunk_from_subtitles(
         # Main content that will eventually be embedded.
         "text": text,
 
+        # Number of tokens in this chunk.
+        "token_count": count_tokens(text),
+
+        # Number of characters.
+        # Keeping this is useful for debugging.
+        "character_count": len(text),
+
+
         # -------------------------------------------------
         # EXACT VIDEO TIMESTAMP
         # -------------------------------------------------
@@ -481,7 +521,7 @@ def create_chunk_from_subtitles(
 
 def chunk_segment(
     segment,
-    max_chars=MAX_CHARS,
+    max_tokens=MAX_TOKENS,
     overlap_subtitles=OVERLAP_SUBTITLES
 ):
     """
@@ -499,7 +539,7 @@ def chunk_segment(
 
     current_subtitles = []
 
-    current_length = 0
+    current_token_count = 0
 
 
     # -----------------------------------------------------
@@ -510,7 +550,8 @@ def chunk_segment(
 
         subtitle_text = subtitle["text"]
 
-        subtitle_length = len(
+        # Count tokens in this subtitle.
+        subtitle_token_count = count_tokens(
             subtitle_text
         )
 
@@ -523,8 +564,7 @@ def chunk_segment(
         would_exceed_limit = (
             current_subtitles
             and
-            current_length + subtitle_length
-            > max_chars
+            current_token_count + subtitle_token_count > max_tokens
         )
 
 
@@ -559,21 +599,23 @@ def chunk_segment(
 
 
             # Recalculate current character count.
-            current_length = sum(
-                len(item["text"])
+            current_token_count = sum(
+                count_tokens(
+                    item["text"]
+                )
                 for item in current_subtitles
             )
 
 
         # -------------------------------------------------
-        # Add current subtitle
+        # Add subtitle to current chunk
         # -------------------------------------------------
 
         current_subtitles.append(
             subtitle
         )
 
-        current_length += subtitle_length
+        current_token_count += subtitle_token_count
 
 
     # -----------------------------------------------------
@@ -716,7 +758,12 @@ def main():
         print(
                 "Characters:",
                 len(chunk["text"])
-            )
+        )
+        
+        print(
+             "Tokens:",
+             chunk["token_count"]
+        )
        
 
 
