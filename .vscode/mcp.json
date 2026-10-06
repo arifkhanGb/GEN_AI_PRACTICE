@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "bookshop": {
+      "args": [
+        "C:\\Users\\Walkingtree\\Desktop\\GEN_AI_PRACTICE\\05-mcp\\server.py"
+      ],
+      "command": "C:\\Users\\Walkingtree\\Desktop\\GEN_AI_PRACTICE\\05-mcp\\.venv\\Scripts\\python.exe",
+      "cwd": "C:\\Users\\Walkingtree\\Desktop\\GEN_AI_PRACTICE\\05-mcp",
+      "type": "stdio"
+    }
+  }
+}
