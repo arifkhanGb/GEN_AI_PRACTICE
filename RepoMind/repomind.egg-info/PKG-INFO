@@ -1,0 +1,43 @@
+Metadata-Version: 2.4
+Name: repomind
+Version: 0.1.0
+Summary: AI-powered GitHub repository documentation and chat
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi[standard]
+Requires-Dist: pydantic-settings
+Requires-Dist: python-dotenv
+Requires-Dist: inngest
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: httpx; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+
+
+# RepoMind
+
+AI-powered documentation and chat for GitHub repositories.
+
+## Tech Stack
+
+- Python 3.12+
+- FastAPI
+- Inngest
+- LangGraph
+- LangChain
+- Qdrant
+- PostgreSQL
+
+## Local Development
+
+Activate the virtual environment:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Install the project:
+
+```powershell
+python -m pip install -e ".[dev]"
+```
