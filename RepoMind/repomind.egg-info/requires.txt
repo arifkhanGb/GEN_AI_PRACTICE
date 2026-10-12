@@ -1,0 +1,9 @@
+fastapi[standard]
+pydantic-settings
+python-dotenv
+inngest
+
+[dev]
+pytest
+httpx
+ruff
